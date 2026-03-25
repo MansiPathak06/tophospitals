@@ -13,20 +13,20 @@ function authHeaders() {
 function Field({ label, required, children, hint }) {
   return (
     <div>
-      <label className="block text-[11.5px] font-semibold text-slate-500 uppercase tracking-widest mb-1.5">
-        {label} {required && <span className="text-indigo-400">*</span>}
+      <label className="block text-[11.5px] font-semibold text-[#0F5C5C]/60 uppercase tracking-widest mb-1.5">
+        {label} {required && <span className="text-[#0F5C5C]">*</span>}
       </label>
       {children}
-      {hint && <p className="mt-1 text-[11px] text-slate-600">{hint}</p>}
+      {hint && <p className="mt-1 text-[11px] text-gray-400">{hint}</p>}
     </div>
   );
 }
 
 const inp =
-  'w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-slate-200 text-sm placeholder:text-slate-600 outline-none transition-all focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/10';
+  'w-full bg-[#f4fafa] border border-[#e6f4f4] rounded-xl px-4 py-2.5 text-[#1a3333] text-sm placeholder:text-gray-400 outline-none transition-all focus:border-[#0F5C5C]/50 focus:ring-2 focus:ring-[#0F5C5C]/10 focus:bg-white';
 
 const textarea =
-  'w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-slate-200 text-sm placeholder:text-slate-600 outline-none transition-all focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/10 resize-none';
+  'w-full bg-[#f4fafa] border border-[#e6f4f4] rounded-xl px-4 py-2.5 text-[#1a3333] text-sm placeholder:text-gray-400 outline-none transition-all focus:border-[#0F5C5C]/50 focus:ring-2 focus:ring-[#0F5C5C]/10 focus:bg-white resize-none';
 
 // ── Step indicator ───────────────────────────────────────────────────────────
 const STEPS = ['Basic Info', 'Details', 'Media', 'Doctors', 'Review'];
@@ -39,19 +39,19 @@ function StepBar({ current }) {
           <div className="flex flex-col items-center">
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all
-                ${i < current  ? 'bg-indigo-500 border-indigo-500 text-white'
-                : i === current ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300'
-                : 'bg-white/[0.03] border-white/10 text-slate-600'}`}
+                ${i < current  ? 'bg-[#0F5C5C] border-[#0F5C5C] text-white'
+                : i === current ? 'bg-[#e6f4f4] border-[#0F5C5C] text-[#0F5C5C]'
+                : 'bg-white border-[#e6f4f4] text-gray-400'}`}
             >
               {i < current ? '✓' : i + 1}
             </div>
-            <span className={`mt-1.5 text-[10.5px] font-medium whitespace-nowrap
-              ${i === current ? 'text-indigo-300' : i < current ? 'text-slate-400' : 'text-slate-600'}`}>
+            <span className={`mt-1.5 text-[10.5px] font-semibold whitespace-nowrap
+              ${i === current ? 'text-[#0F5C5C]' : i < current ? 'text-[#0F5C5C]/60' : 'text-gray-400'}`}>
               {s}
             </span>
           </div>
           {i < STEPS.length - 1 && (
-            <div className={`flex-1 h-px mx-2 mb-5 transition-all ${i < current ? 'bg-indigo-500/50' : 'bg-white/[0.07]'}`} />
+            <div className={`flex-1 h-px mx-2 mb-5 transition-all ${i < current ? 'bg-[#0F5C5C]/40' : 'bg-[#e6f4f4]'}`} />
           )}
         </div>
       ))}
@@ -75,17 +75,17 @@ function TagInput({ tags, onChange, placeholder }) {
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } }}
           placeholder={placeholder} />
         <button type="button" onClick={add}
-          className="px-4 py-2.5 rounded-xl bg-indigo-500/15 border border-indigo-500/25 text-indigo-300 text-sm hover:bg-indigo-500/25 transition-all shrink-0">
+          className="px-4 py-2.5 rounded-xl bg-[#e6f4f4] border border-[#0F5C5C]/20 text-[#0F5C5C] text-sm font-semibold hover:bg-[#0F5C5C] hover:text-white transition-all shrink-0">
           Add
         </button>
       </div>
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {tags.map((t) => (
-            <span key={t} className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs">
+            <span key={t} className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e6f4f4] border border-[#0F5C5C]/20 text-[#0F5C5C] text-xs font-semibold">
               {t}
               <button type="button" onClick={() => onChange(tags.filter((x) => x !== t))}
-                className="text-indigo-400 hover:text-red-400 transition-colors">×</button>
+                className="text-[#0F5C5C]/60 hover:text-red-400 transition-colors">×</button>
             </span>
           ))}
         </div>
@@ -103,7 +103,7 @@ function TimingRow({ timing, onChange, onRemove }) {
       <input className={inp + ' flex-1'} placeholder="e.g. 8:00 AM – 9:00 PM"
         value={timing.time} onChange={(e) => onChange({ ...timing, time: e.target.value })} />
       <button type="button" onClick={onRemove}
-        className="w-9 h-9 shrink-0 flex items-center justify-center rounded-xl border border-red-500/20 text-red-400/60 hover:text-red-400 hover:border-red-500/40 transition-all text-lg">
+        className="w-9 h-9 shrink-0 flex items-center justify-center rounded-xl border border-red-200 text-red-400/60 hover:text-red-500 hover:border-red-400 hover:bg-red-50 transition-all text-lg">
         ×
       </button>
     </div>
@@ -113,10 +113,10 @@ function TimingRow({ timing, onChange, onRemove }) {
 // ── Doctor row ───────────────────────────────────────────────────────────────
 function DoctorRow({ doc, onChange, onRemove }) {
   return (
-    <div className="bg-white/[0.02] border border-white/[0.07] rounded-xl p-4 space-y-3">
+    <div className="bg-[#f4fafa] border border-[#e6f4f4] rounded-xl p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Doctor</span>
-        <button type="button" onClick={onRemove} className="text-red-400/50 hover:text-red-400 text-sm transition-colors">Remove</button>
+        <span className="text-xs font-bold text-[#0F5C5C]/60 uppercase tracking-widest">Doctor</span>
+        <button type="button" onClick={onRemove} className="text-red-400/60 hover:text-red-500 text-sm transition-colors font-semibold">Remove</button>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <input className={inp} placeholder="Full Name *" value={doc.name} onChange={(e) => onChange({ ...doc, name: e.target.value })} />
@@ -133,13 +133,13 @@ function DoctorRow({ doc, onChange, onRemove }) {
 // ── Toggle ───────────────────────────────────────────────────────────────────
 function Toggle({ label, value, onChange, description }) {
   return (
-    <div className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/[0.07] rounded-xl">
+    <div className="flex items-center justify-between p-4 bg-[#f4fafa] border border-[#e6f4f4] rounded-xl">
       <div>
-        <p className="text-sm font-medium text-slate-300">{label}</p>
-        {description && <p className="text-[11.5px] text-slate-600 mt-0.5">{description}</p>}
+        <p className="text-sm font-semibold text-[#1a3333]">{label}</p>
+        {description && <p className="text-[11.5px] text-gray-400 mt-0.5">{description}</p>}
       </div>
       <button type="button" onClick={() => onChange(!value)}
-        className={`relative w-11 h-6 rounded-full transition-all duration-200 ${value ? 'bg-indigo-500' : 'bg-white/10'}`}>
+        className={`relative w-11 h-6 rounded-full transition-all duration-200 ${value ? 'bg-[#0F5C5C]' : 'bg-gray-200'}`}>
         <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all duration-200 ${value ? 'left-6' : 'left-1'}`} />
       </button>
     </div>
@@ -149,10 +149,10 @@ function Toggle({ label, value, onChange, description }) {
 // ── ReviewRow ─────────────────────────────────────────────────────────────────
 function ReviewRow({ label, value }) {
   return (
-    <div className="flex gap-3 py-2.5 border-b border-white/[0.05] last:border-0">
-      <span className="text-[11.5px] font-semibold text-slate-500 uppercase tracking-wider w-28 shrink-0 pt-0.5">{label}</span>
-      <span className="text-sm text-slate-300 leading-relaxed break-all">
-        {value || <span className="text-slate-600 italic">Not provided</span>}
+    <div className="flex gap-3 py-2.5 border-b border-[#e6f4f4] last:border-0">
+      <span className="text-[11.5px] font-bold text-[#0F5C5C]/50 uppercase tracking-wider w-28 shrink-0 pt-0.5">{label}</span>
+      <span className="text-sm text-[#1a3333] leading-relaxed break-all">
+        {value || <span className="text-gray-400 italic">Not provided</span>}
       </span>
     </div>
   );
@@ -273,7 +273,7 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
         <TagInput tags={form.specialities} onChange={(v) => set('specialities', v)} placeholder="e.g. Cardiology" />
       </Field>
       <div>
-        <label className="block text-[11.5px] font-semibold text-slate-500 uppercase tracking-widest mb-2">Timings</label>
+        <label className="block text-[11.5px] font-bold text-[#0F5C5C]/60 uppercase tracking-widest mb-2">Timings</label>
         <div className="space-y-2">
           {form.timings.map((t, i) => (
             <TimingRow key={i} timing={t}
@@ -282,7 +282,7 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
           ))}
         </div>
         <button type="button" onClick={() => set('timings', [...form.timings, { day: '', time: '' }])}
-          className="mt-2 text-[12px] text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1">
+          className="mt-2 text-[12px] text-[#0F5C5C] hover:text-[#177a7a] transition-colors flex items-center gap-1 font-semibold">
           + Add timing row
         </button>
       </div>
@@ -302,15 +302,15 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
         <input className={inp} placeholder="https://example.com/hospital.jpg" value={form.image}
           onChange={(e) => set('image', e.target.value)} />
         {form.image && (
-          <div className="mt-3 rounded-xl overflow-hidden border border-white/10 h-40">
+          <div className="mt-3 rounded-xl overflow-hidden border border-[#e6f4f4] h-40">
             <img src={form.image} alt="preview" className="w-full h-full object-cover"
               onError={(e) => { e.target.style.display = 'none'; }} />
           </div>
         )}
       </Field>
       <div>
-        <label className="block text-[11.5px] font-semibold text-slate-500 uppercase tracking-widest mb-2">
-          Gallery Images <span className="normal-case font-normal text-slate-600">(up to 3)</span>
+        <label className="block text-[11.5px] font-bold text-[#0F5C5C]/60 uppercase tracking-widest mb-2">
+          Gallery Images <span className="normal-case font-normal text-gray-400">(up to 3)</span>
         </label>
         <div className="space-y-3">
           {form.gallery.map((url, i) => (
@@ -318,7 +318,7 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
               <input className={inp} placeholder={`Gallery image ${i + 1} URL`} value={url}
                 onChange={(e) => { const g = [...form.gallery]; g[i] = e.target.value; set('gallery', g); }} />
               {url && (
-                <div className="mt-2 rounded-lg overflow-hidden border border-white/10 h-24">
+                <div className="mt-2 rounded-lg overflow-hidden border border-[#e6f4f4] h-24">
                   <img src={url} alt="" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
                 </div>
               )}
@@ -330,7 +330,7 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
 
     // Step 3 — Doctors
     <div key="3" className="space-y-4">
-      <p className="text-[13px] text-slate-500">
+      <p className="text-[13px] text-gray-400">
         Add doctors at this hospital. You can also manage doctors later from the Doctors section.
       </p>
       {form.doctors.map((doc, i) => (
@@ -340,15 +340,15 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
       ))}
       <button type="button"
         onClick={() => set('doctors', [...form.doctors, { name: '', specialization: '', experience: '', phone: '', email: '', image: '' }])}
-        className="w-full py-3 rounded-xl border border-dashed border-white/15 text-slate-500 hover:text-slate-300 hover:border-indigo-500/30 hover:bg-indigo-500/[0.03] text-sm transition-all">
+        className="w-full py-3 rounded-xl border border-dashed border-[#0F5C5C]/25 text-[#0F5C5C]/50 hover:text-[#0F5C5C] hover:border-[#0F5C5C]/50 hover:bg-[#e6f4f4] text-sm font-semibold transition-all">
         + Add a Doctor
       </button>
     </div>,
 
     // Step 4 — Review
     <div key="4" className="space-y-4">
-      <div className="bg-white/[0.02] border border-white/[0.07] rounded-xl p-5">
-        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Basic Info</h4>
+      <div className="bg-[#f4fafa] border border-[#e6f4f4] rounded-xl p-5">
+        <h4 className="text-xs font-bold text-[#0F5C5C]/60 uppercase tracking-widest mb-3">Basic Info</h4>
         <ReviewRow label="Name" value={form.name} />
         <ReviewRow label="City / State" value={[form.city, form.state].filter(Boolean).join(', ')} />
         <ReviewRow label="Address" value={form.address} />
@@ -356,8 +356,8 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
         <ReviewRow label="Email" value={form.email} />
         <ReviewRow label="Hours" value={form.opening && form.closing ? `${form.opening} – ${form.closing}` : null} />
       </div>
-      <div className="bg-white/[0.02] border border-white/[0.07] rounded-xl p-5">
-        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Details</h4>
+      <div className="bg-[#f4fafa] border border-[#e6f4f4] rounded-xl p-5">
+        <h4 className="text-xs font-bold text-[#0F5C5C]/60 uppercase tracking-widest mb-3">Details</h4>
         <ReviewRow label="Tag" value={form.tag} />
         <ReviewRow label="Rating" value={form.rating || '0'} />
         <ReviewRow label="Verified" value={form.verified ? 'Yes ✓' : 'No'} />
@@ -365,8 +365,8 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
         <ReviewRow label="Specialities" value={form.specialities.join(', ')} />
         <ReviewRow label="Timings" value={form.timings.filter((t) => t.day).map((t) => `${t.day}: ${t.time}`).join(' · ')} />
       </div>
-      <div className="bg-white/[0.02] border border-white/[0.07] rounded-xl p-5">
-        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Media & Doctors</h4>
+      <div className="bg-[#f4fafa] border border-[#e6f4f4] rounded-xl p-5">
+        <h4 className="text-xs font-bold text-[#0F5C5C]/60 uppercase tracking-widest mb-3">Media & Doctors</h4>
         <ReviewRow label="Cover Image" value={form.image} />
         <ReviewRow label="Gallery" value={`${form.gallery.filter(Boolean).length} images`} />
         <ReviewRow label="Doctors" value={`${form.doctors.filter((d) => d.name).length} added`} />
@@ -375,17 +375,17 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#080d1a]">
+    <div className="min-h-screen bg-[#f4fafa]">
       {/* Sticky header */}
-      <div className="border-b border-white/[0.07] bg-[#0d1425]/80 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b border-[#e6f4f4] bg-white/80 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center gap-4">
-          <button onClick={onBack} className="text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1.5 text-sm">
+          <button onClick={onBack} className="text-gray-400 hover:text-[#0F5C5C] transition-colors flex items-center gap-1.5 text-sm font-semibold">
             ← Back
           </button>
-          <div className="w-px h-4 bg-white/10" />
+          <div className="w-px h-4 bg-[#e6f4f4]" />
           <div>
-            <h1 className="text-base font-semibold text-slate-100">Add New Hospital</h1>
-            <p className="text-[11.5px] text-slate-600">Step {step + 1} of {STEPS.length} — {STEPS[step]}</p>
+            <h1 className="text-base font-bold text-[#0F5C5C]">Add New Hospital</h1>
+            <p className="text-[11.5px] text-gray-400">Step {step + 1} of {STEPS.length} — {STEPS[step]}</p>
           </div>
         </div>
       </div>
@@ -394,9 +394,9 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
         <StepBar current={step} />
 
         {/* Form card */}
-        <div className="bg-[#0d1425] border border-white/[0.07] rounded-2xl p-7 shadow-2xl shadow-black/30">
-          <h2 className="text-lg font-semibold text-slate-100 mb-1">{STEPS[step]}</h2>
-          <p className="text-[12.5px] text-slate-600 mb-6">
+        <div className="bg-white border border-[#e6f4f4] rounded-2xl p-7 shadow-sm">
+          <h2 className="text-lg font-bold text-[#0F5C5C] mb-1">{STEPS[step]}</h2>
+          <p className="text-[12.5px] text-gray-400 mb-6">
             {['Fill in the core contact details about the hospital.',
               'Add description, specialities, timings and more.',
               'Upload images that appear on the public listing.',
@@ -407,8 +407,8 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
           {steps[step]}
 
           {error && (
-            <div className="mt-5 flex items-center gap-2.5 px-4 py-3 bg-red-500/8 border border-red-500/20 rounded-xl text-[13px] text-red-300">
-              <span className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center text-[10px] font-bold shrink-0">✕</span>
+            <div className="mt-5 flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-[13px] text-red-500">
+              <span className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center text-[10px] font-bold shrink-0">✕</span>
               {error}
             </div>
           )}
@@ -417,18 +417,18 @@ export default function AddHospitalPage({ onBack, onSuccess }) {
         {/* Navigation */}
         <div className="flex justify-between mt-5">
           <button type="button" onClick={step === 0 ? onBack : back}
-            className="px-5 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 text-slate-400 hover:text-slate-200 text-sm transition-all">
+            className="px-5 py-2.5 rounded-xl bg-white border border-[#e6f4f4] text-gray-500 hover:text-[#0F5C5C] hover:border-[#0F5C5C]/30 text-sm font-semibold transition-all">
             {step === 0 ? 'Cancel' : '← Back'}
           </button>
 
           {step < STEPS.length - 1 ? (
             <button type="button" onClick={next}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white text-sm font-semibold hover:opacity-90 shadow-lg shadow-indigo-500/20 transition-all">
+              className="px-6 py-2.5 rounded-xl bg-[#0F5C5C] hover:bg-[#177a7a] text-white text-sm font-semibold shadow-lg shadow-[#0F5C5C]/20 transition-all">
               Continue →
             </button>
           ) : (
             <button type="button" onClick={submit} disabled={submitting}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-emerald-600 text-white text-sm font-semibold hover:opacity-90 shadow-lg shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all">
+              className="px-6 py-2.5 rounded-xl bg-[#0F5C5C] hover:bg-[#177a7a] text-white text-sm font-semibold shadow-lg shadow-[#0F5C5C]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all">
               {submitting && <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
               {submitting ? 'Saving...' : '✓ Add Hospital'}
             </button>
