@@ -122,18 +122,15 @@ export default function MediAssistChatbot() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
-          messages: next.map(({ role, content }) => ({ role, content })),
-        }),
-      });
-      const data = await res.json();
-      const reply = data.content?.map((b) => b.text || "").join("") || "Sorry, please try again.";
+     const res = await fetch("/api/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    messages: next.map(({ role, content }) => ({ role, content })),
+  }),
+});
+const data = await res.json();
+const reply = data.choices?.[0]?.message?.content || "Sorry, please try again.";
       setMessages((prev) => [...prev, { role: "assistant", content: reply, id: Date.now() }]);
       if (!open || minimized) setUnread(true);
     } catch {

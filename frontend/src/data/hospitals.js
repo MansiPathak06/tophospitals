@@ -88,4 +88,61 @@ export const hospitals = [
       { day: "Sunday", time: "Closed" },
     ],
   },
+   {
+    id: "Don't know-moradabad",
+    name: "Fortis Hospital",
+    verified: false,
+    tag: "Best for Ortho",
+    rating: 4.3,
+    reviews: 145,
+    address: "Delhi Road, Near Bus Stand, Moradabad, UP 244001",
+    mapEmbed:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3499.1!2d78.764!3d28.828!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDUwJzE2LjgiTiA3OMKwNDYnMjYuNCJF!5e0!3m2!1sen!2sin!4v1234567892",
+    phone: "+91 80000 12345",
+    opening: "9:00 AM",
+    closing: "8:00 PM",
+    emergency: false,
+    specialities: ["Orthopaedics", "Physiotherapy", "Sports Medicine", "Rheumatology"],
+    image: "/images/hospital3.jpg",
+    about:
+      "Fortis Hospital Moradabad specialises in bone, joint and musculoskeletal care. Our orthopaedic centre is equipped with the latest robotic surgery technology, ensuring minimal recovery times and outstanding outcomes.",
+    gallery: ["/images/h3-g1.jpg", "/images/h3-g2.jpg", "/images/h3-g3.jpg"],
+    doctors: [
+      { name: "Dr. Amit Rana", speciality: "Orthopaedic Surgeon", experience: "14 yrs", image: "/images/doc6.jpg" },
+      { name: "Dr. Neha Joshi", speciality: "Physiotherapist", experience: "8 yrs", image: "/images/doc7.jpg" },
+    ],
+    timings: [
+      { day: "Monday – Friday", time: "9:00 AM – 8:00 PM" },
+      { day: "Saturday", time: "9:00 AM – 5:00 PM" },
+      { day: "Sunday", time: "Closed" },
+    ],
+  }, {
+    id: "Unknown-moradabad",
+    name: "Fortis Hospital",
+    verified: false,
+    tag: "Best for Ortho",
+    rating: 4.3,
+    reviews: 145,
+    address: "Delhi Road, Near Bus Stand, Moradabad, UP 244001",
+    mapEmbed:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3499.1!2d78.764!3d28.828!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDUwJzE2LjgiTiA3OMKwNDYnMjYuNCJF!5e0!3m2!1sen!2sin!4v1234567892",
+    phone: "+91 80000 12345",
+    opening: "9:00 AM",
+    closing: "8:00 PM",
+    emergency: false,
+    specialities: ["Orthopaedics", "Physiotherapy", "Sports Medicine", "Rheumatology"],
+    image: "/images/hospital3.jpg",
+    about:
+      "Fortis Hospital Moradabad specialises in bone, joint and musculoskeletal care. Our orthopaedic centre is equipped with the latest robotic surgery technology, ensuring minimal recovery times and outstanding outcomes.",
+    gallery: ["/images/h3-g1.jpg", "/images/h3-g2.jpg", "/images/h3-g3.jpg"],
+    doctors: [
+      { name: "Dr. Amit Rana", speciality: "Orthopaedic Surgeon", experience: "14 yrs", image: "/images/doc6.jpg" },
+      { name: "Dr. Neha Joshi", speciality: "Physiotherapist", experience: "8 yrs", image: "/images/doc7.jpg" },
+    ],
+    timings: [
+      { day: "Monday – Friday", time: "9:00 AM – 8:00 PM" },
+      { day: "Saturday", time: "9:00 AM – 5:00 PM" },
+      { day: "Sunday", time: "Closed" },
+    ],
+  },
 ];

@@ -1,9 +1,13 @@
 "use client";
 import Link from "next/link";
+import { useState } from "react";
 import { hospitals } from "@/data/hospitals";
 
+
+const INITIAL_COUNT = 3;
+
 const Stars = ({ rating }) => (
-  <div style={{ display: "flex", gap: "2px" }}>
+  <div className="flex gap-0.5">
     {[1, 2, 3, 4, 5].map((s) => (
       <svg key={s} width="13" height="13" viewBox="0 0 24 24"
         fill={s <= Math.round(rating) ? "#f59e0b" : "none"}
@@ -15,122 +19,80 @@ const Stars = ({ rating }) => (
 );
 
 const HospitalCard = ({ hospital }) => (
-  <div className="hospital-card" style={{
-    background: "#fff",
-    borderRadius: "16px",
-    boxShadow: "0 2px 12px rgba(15,92,92,0.08)",
-    border: "1px solid #e6f4f4",
-    display: "flex",
-    flexDirection: "column",
-    overflow: "hidden",
-    transition: "box-shadow 0.2s, transform 0.2s",
-  }}>
-    {/* Image area */}
-    <div style={{ position: "relative", width: "100%", height: "180px", background: "#e6f4f4", flexShrink: 0, overflow: "hidden" }}>
+  <div className="group bg-white rounded-2xl border border-[#e6f4f4] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden">
+
+    {/* Image */}
+    <div className="relative w-full h-44 bg-[#e6f4f4] flex-shrink-0 overflow-hidden">
       <img
         src={hospital.image}
         alt={hospital.name}
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         onError={(e) => { e.target.style.display = "none"; }}
       />
       {hospital.verified && (
-        <span style={{
-          position: "absolute", top: 10, left: 10,
-          background: "#0F5C5C", color: "#fff",
-          fontSize: 10, fontWeight: 700,
-          padding: "3px 10px", borderRadius: 999,
-          display: "flex", alignItems: "center", gap: 4,
-        }}>
+        <span className="absolute top-2.5 left-2.5 bg-[#0F5C5C] text-white text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
           ✓ Verified
         </span>
       )}
       {hospital.tag && (
-        <span style={{
-          position: "absolute", top: 10, right: 10,
-          background: "#fbbf24", color: "#78350f",
-          fontSize: 10, fontWeight: 700,
-          padding: "3px 10px", borderRadius: 999,
-        }}>
+        <span className="absolute top-2.5 right-2.5 bg-amber-400 text-amber-900 text-[10px] font-bold px-3 py-1 rounded-full">
           ★ {hospital.tag}
         </span>
       )}
       {hospital.emergency && (
-        <span style={{
-          position: "absolute", bottom: 10, right: 10,
-          background: "#ef4444", color: "#fff",
-          fontSize: 10, fontWeight: 700,
-          padding: "3px 10px", borderRadius: 999,
-        }}>
+        <span className="absolute bottom-2.5 right-2.5 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">
           24/7 Emergency
         </span>
       )}
     </div>
 
     {/* Body */}
-    <div style={{ padding: "16px", display: "flex", flexDirection: "column", flex: 1 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
-        <h3 style={{ color: "#0F5C5C", fontWeight: 700, fontSize: 15, lineHeight: 1.3, margin: 0 }}>{hospital.name}</h3>
-        <span style={{ color: "#f59e0b", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>{hospital.rating}</span>
+    <div className="flex flex-col flex-1 p-4">
+      <div className="flex justify-between items-start gap-2 mb-1">
+        <h3 className="text-[#0F5C5C] font-bold text-[15px] leading-snug">{hospital.name}</h3>
+        <span className="text-amber-500 font-bold text-sm flex-shrink-0">{hospital.rating}</span>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
+      <div className="flex items-center gap-2 mb-3">
         <Stars rating={hospital.rating} />
-        <span style={{ color: "#9ca3af", fontSize: 11 }}>({hospital.reviews})</span>
+        <span className="text-gray-400 text-[11px]">({hospital.reviews})</span>
       </div>
 
-      <div style={{ display: "flex", gap: 6, alignItems: "flex-start", marginBottom: 6 }}>
-        <span style={{ color: "#0F5C5C", fontSize: 13, flexShrink: 0 }}>📍</span>
-        <span style={{ color: "#6b7280", fontSize: 12, lineHeight: 1.4 }}>{hospital.address}</span>
+      <div className="flex gap-1.5 items-start mb-1.5">
+        <span className="text-[#0F5C5C] text-[13px] flex-shrink-0">📍</span>
+        <span className="text-gray-500 text-xs leading-relaxed">{hospital.address}</span>
       </div>
 
-      <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 14 }}>
-        <span style={{ color: "#0F5C5C", fontSize: 13, flexShrink: 0 }}>🕐</span>
-        <span style={{ color: "#6b7280", fontSize: 12 }}>{hospital.opening} – {hospital.closing}</span>
+      <div className="flex gap-1.5 items-center mb-4">
+        <span className="text-[#0F5C5C] text-[13px] flex-shrink-0">🕐</span>
+        <span className="text-gray-500 text-xs">{hospital.opening} – {hospital.closing}</span>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>
+      <div className="flex flex-wrap gap-1.5 mb-4">
         {hospital.specialities.slice(0, 3).map((s) => (
-          <span key={s} style={{
-            background: "#e6f4f4", color: "#0F5C5C",
-            fontSize: 11, fontWeight: 600,
-            padding: "3px 10px", borderRadius: 999,
-          }}>
+          <span key={s} className="bg-[#e6f4f4] text-[#0F5C5C] text-[11px] font-semibold px-2.5 py-1 rounded-full">
             {s}
           </span>
         ))}
         {hospital.specialities.length > 3 && (
-          <span style={{
-            background: "#f3f4f6", color: "#9ca3af",
-            fontSize: 11, padding: "3px 10px", borderRadius: 999,
-          }}>
+          <span className="bg-gray-100 text-gray-400 text-[11px] px-2.5 py-1 rounded-full">
             +{hospital.specialities.length - 3} more
           </span>
         )}
       </div>
 
-      <div style={{
-        marginTop: "auto",
-        borderTop: "1px solid #f3f4f6",
-        paddingTop: 14,
-        display: "flex",
-        gap: 8,
-      }}>
-        <a href={`tel:${hospital.phone}`} style={{
-          flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-          border: "1.5px solid #0F5C5C", color: "#0F5C5C",
-          fontSize: 13, fontWeight: 600,
-          borderRadius: 10, padding: "10px 0",
-          textDecoration: "none", background: "transparent",
-        }}>
+      {/* Buttons */}
+      <div className="mt-auto pt-3 border-t border-gray-100 flex gap-2">
+        <a
+          href={`tel:${hospital.phone}`}
+          className="flex-1 flex items-center justify-center gap-1.5 border-[1.5px] border-[#0F5C5C] text-[#0F5C5C] hover:bg-[#0F5C5C] hover:text-white text-[13px] font-semibold rounded-xl py-2.5 transition-colors duration-200"
+        >
           📞 Call
         </a>
-        <Link href={`/hospitals/${hospital.id}`} style={{
-          flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-          background: "#0F5C5C", color: "#fff",
-          fontSize: 13, fontWeight: 600,
-          borderRadius: 10, padding: "10px 0",
-          textDecoration: "none",
-        }}>
+        <Link
+          href={`/hospitals/${hospital.id}`}
+          className="flex-1 flex items-center justify-center gap-1.5 bg-[#0F5C5C] hover:bg-[#177a7a] text-white text-[13px] font-semibold rounded-xl py-2.5 transition-colors duration-200"
+        >
           View Details →
         </Link>
       </div>
@@ -139,49 +101,73 @@ const HospitalCard = ({ hospital }) => (
 );
 
 export default function HospitalsPage() {
+  const [showAll, setShowAll] = useState(false);
+
+  const visibleHospitals = showAll ? hospitals : hospitals.slice(0, INITIAL_COUNT);
+  const hasMore = hospitals.length > INITIAL_COUNT;
+
+  const handleShowLess = () => {
+    document.getElementById("hospitals-top")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(() => setShowAll(false), 300);
+  };
+
   return (
-    <div style={{ minHeight: "100vh", background: "#f4fafa" }}>
-      <style>{`
-        .hospital-card:hover {
-          box-shadow: 0 8px 32px rgba(15,92,92,0.14);
-          transform: translateY(-3px);
-        }
-        .hospitals-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 24px;
-        }
-        @media (max-width: 1024px) {
-          .hospitals-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-        @media (max-width: 620px) {
-          .hospitals-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
+    <>
+     
+      <div className="min-h-screen bg-[#f4fafa]">
 
-      {/* Header */}
-      <div style={{ background: "#fff", padding: "40px 24px", borderBottom: "2px solid #e6f4f4" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-          <p style={{ color: "#0F5C5C", fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 4 }}>
-            Discover
-          </p>
-          <h1 style={{ color: "#0F5C5C", fontSize: 32, fontWeight: 700, marginBottom: 6 }}>
-            Top Hospitals Near You
-          </h1>
-          <p style={{ color: "rgba(15,92,92,0.5)", fontSize: 13 }}>
-            {hospitals.length} hospitals listed · Moradabad, UP
-          </p>
-        </div>
-      </div>
+        {/* ── Hero header ── */}
+        <div className="bg-white border-b-2 border-[#e6f4f4] px-6 py-10">
+          <div
+            id="hospitals-top"
+            className="max-w-[1280px] mx-auto flex items-end justify-between flex-wrap gap-4"
+          >
+            <div>
+              <p className="text-[#0F5C5C] text-[11px] font-bold tracking-widest uppercase mb-1.5">
+                Discover
+              </p>
+              <h1 className="text-[#0F5C5C] text-3xl md:text-4xl font-bold mb-1">
+                Top Hospitals Near You
+              </h1>
+              <p className="text-[#0F5C5C]/50 text-sm">
+                {hospitals.length} hospitals listed · Moradabad, UP
+              </p>
+            </div>
 
-      {/* Cards Grid */}
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 24px" }}>
-        <div className="hospitals-grid">
-          {hospitals.map((h) => (
-            <HospitalCard key={h.id} hospital={h} />
-          ))}
+            {/* View All button — only visible when collapsed */}
+            {hasMore && !showAll && (
+              <button
+                onClick={() => setShowAll(true)}
+                className="inline-flex items-center gap-2 border-[1.5px] border-[#0F5C5C] text-[#0F5C5C] hover:bg-[#0F5C5C] hover:text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all duration-200"
+              >
+                View All Hospitals →
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* ── Cards grid ── */}
+        <div className="max-w-[1280px] mx-auto px-6 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {visibleHospitals.map((h) => (
+              <HospitalCard key={h.id} hospital={h} />
+            ))}
+          </div>
+
+          {/* Show Less button — after expand */}
+          {showAll && (
+            <div className="flex justify-center mt-10">
+              <button
+                onClick={handleShowLess}
+                className="inline-flex items-center gap-2 border-[1.5px] border-[#0F5C5C] text-[#0F5C5C] hover:bg-[#0F5C5C] hover:text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all duration-200"
+              >
+                ↑ Show Less
+              </button>
+            </div>
+          )}
+        </div>
+
       </div>
-    </div>
+    </>
   );
 }

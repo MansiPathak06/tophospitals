@@ -1,5 +1,7 @@
 "use client";
 
+
+
 const Hero = () => {
   return (
     <section className="w-full bg-[#0F5C5C] min-h-[520px] h-155 relative overflow-hidden flex items-center">
@@ -90,5 +92,6 @@ const Hero = () => {
     </section>
   );
 };
+
 
 export default Hero;

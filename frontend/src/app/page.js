@@ -6,11 +6,15 @@ import Testimonials from '@/components/Testimoials';
 import React from 'react';
 import HospitalsPage from './hospitals/page';
 
+
+
 const page = () => {
   return (
     <div>
       <Navbar/>
-  <Hero/>
+  <Hero>
+   
+  </Hero>
   <HospitalsPage/>
   
       <Blogs/>
