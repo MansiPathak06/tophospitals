@@ -1,9 +1,12 @@
+import MediAssistChatbot from "@/components/MediAssistChatbot";
 import "./globals.css";
 
 export default function RootLayout({ children }) {
   return (
     <html>
-      <body>{children}</body>
+      <body>{children}
+        <MediAssistChatbot></MediAssistChatbot>
+      </body>
     </html>
   );
 }
