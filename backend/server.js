@@ -9,6 +9,7 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/hospitals', require('./routes/hospitals'));
 app.use('/api/doctors', require('./routes/doctors'));
+app.use('/api/blogs',     require('./routes/blogs'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

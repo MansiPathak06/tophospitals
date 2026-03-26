@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import HospitalsTab from './HospitalsTab';
+import BlogsTab from './BlogsTab';
 
 const API = 'http://localhost:5000/api';
 
@@ -192,10 +193,10 @@ export default function AdminDashboard() {
   }, [token, loadAll]);
 
   // ── Toast ───────────────────────────────────────────────────────────────────
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type, visible: true });
-    setTimeout(() => setToast((p) => ({ ...p, visible: false })), 3000);
-  };
+ const showToast = useCallback((message, type = 'success') => {
+  setToast({ message, type, visible: true });
+  setTimeout(() => setToast((p) => ({ ...p, visible: false })), 3000);
+}, []);
 
   // ── Logout ──────────────────────────────────────────────────────────────────
   const logout = () => {
@@ -264,6 +265,7 @@ export default function AdminDashboard() {
     { key: 'overview',   label: 'Dashboard',  icon: '⊞' },
     { key: 'hospitals',  label: 'Hospitals',   icon: '🏥' },
     { key: 'doctors',    label: 'Doctors',     icon: '👨‍⚕️' },
+    { key: 'blogs',     label: 'Blog Posts', icon: '📝' }, 
   ];
 
   return (
@@ -450,6 +452,12 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+        {activePage === 'blogs' && (
+  <BlogsTab
+    token={token}
+    showToast={showToast}
+  />
+)}
       </main>
 
       {/* ── Hospital Modal ── */}
