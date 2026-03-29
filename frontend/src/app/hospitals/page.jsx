@@ -17,10 +17,22 @@ const Stars = ({ rating }) => (
     ))}
   </div>
 );
+const GridIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+    <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+  </svg>
+);
+const ListIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="10" width="18" height="5" rx="1"/>
+    <rect x="3" y="17" width="18" height="5" rx="1"/>
+  </svg>
+);
 
-const HospitalCard = ({ hospital }) => (
-  <div className="bg-white rounded-2xl shadow-[0_2px_12px_rgba(15,92,92,0.08)] border border-[#e6f4f4] flex flex-col overflow-hidden transition-all duration-200 hover:shadow-[0_8px_32px_rgba(15,92,92,0.14)] hover:-translate-y-1">
-    <div className="relative w-full h-44 bg-[#e6f4f4] flex-shrink-0 overflow-hidden">
+const HospitalCard = ({ hospital, isGrid }) => (
+  <div className={`bg-white rounded-2xl shadow-[0_2px_12px_rgba(15,92,92,0.08)] border border-[#e6f4f4] overflow-hidden transition-all duration-200 hover:shadow-[0_8px_32px_rgba(15,92,92,0.14)] hover:-translate-y-1 ${isGrid ? "flex flex-col" : "flex flex-row"}`}>
+    <div className={`relative bg-[#e6f4f4] flex-shrink-0 overflow-hidden ${isGrid ? "w-full h-44" : "w-56 h-auto"}`}>
       <img src={hospital.image} alt={hospital.name}
         className="w-full h-full object-cover"
         onError={(e) => { e.target.style.display = "none"; }} />
@@ -78,6 +90,7 @@ export default function HospitalsPage() {
   const [loading, setLoading]     = useState(true);
   const [error, setError]         = useState("");
   const { city, clearCity }       = useCity();
+  const [isGrid, setIsGrid] = useState(true);
 
   const searchParams = useSearchParams();
   const router       = useRouter();
@@ -156,9 +169,21 @@ export default function HospitalsPage() {
             )}
           </div> */}
 
-          <p className="text-[#0F5C5C]/50 text-[13px] mt-3">
-            {loading ? "Loading..." : `${displayed.length} hospital${displayed.length !== 1 ? "s" : ""} found`}
-          </p>
+        <div className="flex items-center justify-between mt-3">
+  <p className="text-[#0F5C5C]/50 text-[13px]">
+    {loading ? "Loading..." : `${displayed.length} hospital${displayed.length !== 1 ? "s" : ""} found`}
+  </p>
+  <div className="flex items-center gap-1 border-[1.5px] border-[#0F5C5C] rounded-full p-1">
+    <button onClick={() => setIsGrid(true)}
+      className={`p-2 rounded-full transition-all duration-200 ${isGrid ? "bg-[#0F5C5C] text-white" : "text-[#0F5C5C]"}`}>
+      <GridIcon />
+    </button>
+    <button onClick={() => setIsGrid(false)}
+      className={`p-2 rounded-full transition-all duration-200 ${!isGrid ? "bg-[#0F5C5C] text-white" : "text-[#0F5C5C]"}`}>
+      <ListIcon />
+    </button>
+  </div>
+</div>
         </div>
       </div>
 
@@ -228,9 +253,9 @@ export default function HospitalsPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={isGrid ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col gap-4"}>
             {displayed.map((h) => (
-              <HospitalCard key={h.id} hospital={h} />
+              <HospitalCard key={h.id} hospital={h} isGrid={isGrid} />
             ))}
           </div>
         )}
