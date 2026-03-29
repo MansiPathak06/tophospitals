@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { hospitals } from "@/data/hospitals";
+import Footer from "./Footer";
+import Navbar from "./Navbar";
 
 
 const INITIAL_COUNT = 6;
@@ -84,7 +86,7 @@ export default function HospitalsPage() {
 
   return (
     <>
-     
+    
       <div className="min-h-screen bg-[#f4fafa]">
         <div className="bg-white  border-b-2 border-[#e6f4f4] px-6 py-5">
           <div id="hospitals-top" className="max-w-[1280px] mx-auto flex items-end justify-between flex-wrap gap-4">
@@ -118,6 +120,7 @@ export default function HospitalsPage() {
           )}
         </div>
       </div>
+    
     </>
   );
 }

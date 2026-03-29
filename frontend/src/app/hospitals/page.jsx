@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCity } from "@/hooks/useCity";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
 
 const API = "http://localhost:5000/api";
 
@@ -139,10 +142,11 @@ export default function HospitalsPage() {
 
   return (
     <div className=" bg-[#f4fafa]">
+   
 
       {/* Header */}
       <div className="px-6 py-2 border-[#e6f4f4]">
-        <div className="max-w-[1280px] mx-auto">
+        <div className="max-w-[1280px] mx-auto px-6 md:px-8 lg:px-10">
           <p className="text-[#0F5C5C] text-[11px] font-bold tracking-widest uppercase mb-1">Discover</p>
           <h1 className="text-[#0F5C5C] text-3xl font-bold mb-4">
             Top Hospitals {city ? `in ${city}` : "Near You"}
@@ -167,7 +171,7 @@ export default function HospitalsPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-[1280px] mx-auto px-6 py-4">
+      <div className="max-w-[1280px] mx-auto px-6 md:px-8 lg:px-10 py-4">
 
         {/* Active filters */}
         {(city || search) && !loading && (
@@ -240,6 +244,7 @@ export default function HospitalsPage() {
           </div>
         )}
       </div>
+  
     </div>
   );
 }

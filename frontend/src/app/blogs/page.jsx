@@ -204,7 +204,7 @@ export default function BlogsPage() {
 
         {/* ── Page Header ── */}
         <div className="bg-white border-b-2 border-teal-100 px-6 py-10">
-          <div className="max-w-[1280px] mx-auto">
+          <div className="max-w-[1280px] mx-auto px-6 md:px-8 lg:px-10">
             <p className="text-teal-600 text-[11px] font-bold tracking-widest uppercase mb-2">Our Blog</p>
             <div className="flex items-end justify-between flex-wrap gap-4">
               <div>
