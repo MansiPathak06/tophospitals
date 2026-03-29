@@ -31,8 +31,14 @@ const getBlogs = async (req, res) => {
 const getBlogById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // ✅ Add this guard
+    if (!id || isNaN(Number(id))) {
+      return res.status(400).json({ error: 'Invalid blog ID' });
+    }
+
     const result = await db.query(
-      'SELECT * FROM blogs WHERE id = $1 AND published = TRUE', // $1 → ? for MySQL
+      'SELECT * FROM blogs WHERE id = $1 AND published = TRUE',
       [id]
     );
     const blog = result.rows ? result.rows[0] : result[0];

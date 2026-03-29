@@ -67,7 +67,11 @@ export default function HospitalDetailPage({ params }) {
   const specialities = hospital.specialities || [];
   const gallery      = hospital.gallery      || [];
   const doctors      = hospital.doctors      || [];
-  const timings      = hospital.timings      || [];
+  const timings = Array.isArray(hospital.timings)
+  ? hospital.timings
+  : typeof hospital.timings === "string"
+  ? JSON.parse(hospital.timings)
+  : [];
 
   return (
     <div className="min-h-screen bg-[#f4fafa] font-sans">

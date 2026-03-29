@@ -15,13 +15,12 @@ function auth(req, res, next) {
   }
 }
 
-// ── GET /api/hospitals — public, returns all hospitals with their doctors ────
+// ── GET /api/hospitals — public ──────────────────────────────────────────────
 router.get('/', async (req, res) => {
   try {
     const hospitals = await pool.query(
       'SELECT * FROM hospitals ORDER BY created_at DESC'
     );
-    // attach doctors to each hospital
     const doctors = await pool.query('SELECT * FROM doctors');
     const result = hospitals.rows.map((h) => ({
       ...h,
@@ -54,6 +53,7 @@ router.post('/', auth, async (req, res) => {
     about, image, gallery, specialities,
     tag, rating, reviews, verified, emergency,
     opening, closing, map_embed,
+    timings,                  // ✅ added
     doctors: doctorsList,
   } = req.body;
 
@@ -64,24 +64,24 @@ router.post('/', auth, async (req, res) => {
       `INSERT INTO hospitals
         (name, city, state, address, phone, email, about, image, gallery,
          specialities, tag, rating, reviews, verified, emergency,
-         opening, closing, map_embed)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
+         opening, closing, map_embed, timings)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
        RETURNING *`,
       [
         name, city, state, address, phone, email,
         about, image,
-        gallery   || [],
+        gallery      || [],
         specialities || [],
-        tag, rating || 0, reviews || 0,
-        verified  || false,
-        emergency || false,
+        tag, rating  || 0, reviews || 0,
+        verified     || false,
+        emergency    || false,
         opening, closing, map_embed,
+        timings || [] ,  // ✅ $19
       ]
     );
 
     const hospital = result.rows[0];
 
-    // insert doctors if provided
     if (Array.isArray(doctorsList) && doctorsList.length > 0) {
       for (const doc of doctorsList) {
         if (!doc.name) continue;
@@ -93,7 +93,6 @@ router.post('/', auth, async (req, res) => {
       }
     }
 
-    // return hospital with doctors
     const doctors = await pool.query(
       'SELECT * FROM doctors WHERE hospital_id = $1', [hospital.id]
     );
@@ -108,6 +107,51 @@ router.delete('/:id', auth, async (req, res) => {
   try {
     await pool.query('DELETE FROM hospitals WHERE id = $1', [req.params.id]);
     res.json({ message: 'Deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ── PUT /api/hospitals/:id — protected ──────────────────────────────────────
+router.put('/:id', auth, async (req, res) => {
+  const {
+    name, city, state, address, phone, email,
+    about, image, gallery, specialities,
+    tag, rating, reviews, verified, emergency,
+    opening, closing, map_embed,
+    timings,                  // ✅ added
+  } = req.body;
+
+  if (!name) return res.status(400).json({ message: 'Name is required' });
+
+  try {
+    const result = await pool.query(
+      `UPDATE hospitals SET
+        name=$1, city=$2, state=$3, address=$4, phone=$5, email=$6,
+        about=$7, image=$8, gallery=$9, specialities=$10,
+        tag=$11, rating=$12, reviews=$13, verified=$14, emergency=$15,
+        opening=$16, closing=$17, map_embed=$18, timings=$19
+       WHERE id=$20 RETURNING *`,
+      [
+        name, city, state, address, phone, email,
+        about, image,
+        gallery      || [],
+        specialities || [],
+        tag, rating  || 0, reviews || 0,
+        verified     || false,
+        emergency    || false,
+        opening, closing, map_embed,
+        timings || [],   // ✅ $19
+        req.params.id,                   // ✅ $20
+      ]
+    );
+
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Not found' });
+
+    const doctors = await pool.query(
+      'SELECT * FROM doctors WHERE hospital_id = $1', [req.params.id]
+    );
+    res.json({ ...result.rows[0], doctors: doctors.rows });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

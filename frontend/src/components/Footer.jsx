@@ -5,16 +5,9 @@ const footerLinks = {
   "Quick Links": [
     { label: "Home", href: "/" },
     { label: "Find Hospitals", href: "/hospitals" },
-    { label: "Specialities", href: "/specialities" },
-    { label: "Blog", href: "/blogs" },
-    { label: "About Us", href: "/about" },
-  ],
-  "Specialities": [
-    { label: "Cardiology", href: "/specialities/cardiology" },
-    { label: "Neurology", href: "/specialities/neurology" },
-    { label: "Orthopaedics", href: "/specialities/orthopaedics" },
-    { label: "Gastroenterology", href: "/specialities/gastroenterology" },
-    { label: "Urology", href: "/specialities/urology" },
+    { label: "Blogs", href: "/blogs" },
+    { label: "FAQs", href: "/faq" },
+    { label: "Contact", href: "/contact" },
   ],
   "Support": [
     { label: "Contact Us", href: "/contact" },
@@ -108,7 +101,7 @@ export default function Footer() {
 
       {/* Main footer content */}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "64px 24px 48px" }}>
-        <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr 1fr", gap: "40px 32px" }}>
+        <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr", gap: "40px 32px" }}>
 
           {/* Brand column */}
           <div className="footer-brand">
