@@ -138,7 +138,7 @@ export default function HospitalsPage() {
   const clearSearch = () => handleSearchChange("");
 
   return (
-    <div className="min-h-screen bg-[#f4fafa]">
+    <div className=" bg-[#f4fafa]">
 
       {/* Header */}
       <div className="px-6 py-2 border-[#e6f4f4]">
