@@ -16,7 +16,7 @@ function authHeaders(token) {
 function Toast({ message, type, visible }) {
   return (
     <div
-      className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3.5 rounded-xl text-[13.5px] shadow-2xl transition-all duration-300 pointer-events-none
+      className={`fixed bottom-4 right-4 left-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 flex items-center gap-3 px-4 py-3.5 rounded-xl text-[13.5px] shadow-2xl transition-all duration-300 pointer-events-none
         ${visible ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0'}
         ${type === 'success'
           ? 'bg-[#0F5C5C] text-white border border-[#2ec4a0]/40'
@@ -42,10 +42,10 @@ function Modal({ open, onClose, title, children }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F5C5C]/30 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#0F5C5C]/30 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-[480px] mx-4 bg-white border border-[#e6f4f4] rounded-2xl p-8 shadow-2xl shadow-[#0F5C5C]/10 max-h-[92vh] overflow-y-auto">
+      <div className="w-full sm:max-w-[480px] sm:mx-4 bg-white border border-[#e6f4f4] rounded-t-2xl sm:rounded-2xl p-6 sm:p-8 shadow-2xl shadow-[#0F5C5C]/10 max-h-[92vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold text-[#0F5C5C]">{title}</h3>
           <button
@@ -98,13 +98,13 @@ function StatCard({ icon, value, label, accent }) {
     amber: 'bg-amber-50',
   };
   return (
-    <div className="bg-white border border-[#e6f4f4] rounded-2xl p-5 flex items-center gap-4 hover:shadow-md hover:border-[#0F5C5C]/20 transition-all duration-200">
-      <div className={`w-12 h-12 rounded-[13px] ${accents[accent]} flex items-center justify-center text-xl shrink-0`}>
+    <div className="bg-white border border-[#e6f4f4] rounded-2xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4 hover:shadow-md hover:border-[#0F5C5C]/20 transition-all duration-200">
+      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-[13px] ${accents[accent]} flex items-center justify-center text-lg sm:text-xl shrink-0`}>
         {icon}
       </div>
       <div>
-        <div className="text-3xl font-bold text-[#0F5C5C] leading-none">{value}</div>
-        <div className="text-[12.5px] text-gray-400 mt-1.5">{label}</div>
+        <div className="text-2xl sm:text-3xl font-bold text-[#0F5C5C] leading-none">{value}</div>
+        <div className="text-[11.5px] sm:text-[12.5px] text-gray-400 mt-1.5">{label}</div>
       </div>
     </div>
   );
@@ -190,7 +190,7 @@ function EditDoctorModal({ doctor, hospitals, token, onClose, onSuccess }) {
             ))}
           </select>
         </MField>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <MField label="Phone">
             <input className={inputCls} value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="+91 98765 43210" />
           </MField>
@@ -234,18 +234,20 @@ function EditDoctorModal({ doctor, hospitals, token, onClose, onSuccess }) {
 export default function AdminDashboard() {
   const router = useRouter();
   const [token, setToken] = useState(() => {
-  if (typeof window === 'undefined') return ''; // SSR guard
-  return localStorage.getItem('zentrix_token') || '';
-});
+    if (typeof window === 'undefined') return '';
+    return localStorage.getItem('zentrix_token') || '';
+  });
   const [adminEmail, setAdminEmail] = useState('');
   const [activePage, setActivePage] = useState('overview');
   const [hospitals, setHospitals]   = useState([]);
   const [doctors, setDoctors]       = useState([]);
   const [loading, setLoading]       = useState(true);
 
+  const [sidebarOpen, setSidebarOpen] = useState(false); // ← mobile sidebar toggle
+
   const [hospitalModal, setHospitalModal] = useState(false);
   const [doctorModal, setDoctorModal]     = useState(false);
-  const [editingDoctor, setEditingDoctor] = useState(null); // ← new
+  const [editingDoctor, setEditingDoctor] = useState(null);
   const [submitting, setSubmitting]       = useState(false);
 
   // Hospital form
@@ -266,13 +268,18 @@ export default function AdminDashboard() {
   const [toast, setToast] = useState({ message: '', type: 'success', visible: false });
 
   // ── Auth guard ──────────────────────────────────────────────────────────────
- useEffect(() => {
-  const t = localStorage.getItem('zentrix_token');
-  const e = localStorage.getItem('zentrix_email');
-  if (!t) { router.replace('/login'); return; }
-  setToken(t);          // still fine to set, but now matches initial state
-  setAdminEmail(e || '');
-}, [router]);
+  useEffect(() => {
+    const t = localStorage.getItem('zentrix_token');
+    const e = localStorage.getItem('zentrix_email');
+    if (!t) { router.replace('/login'); return; }
+    setToken(t);
+    setAdminEmail(e || '');
+  }, [router]);
+
+  // ── Close sidebar on route change (mobile) ──────────────────────────────────
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [activePage]);
 
   // ── Fetch ───────────────────────────────────────────────────────────────────
   const fetchHospitals = useCallback(async (t) => {
@@ -381,15 +388,54 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#f4fafa] flex font-sans text-[#1a3333]">
+
+      {/* ── Mobile overlay ── */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* ── Top Navbar ── */}
-      <div className="fixed top-0 left-[236px] right-0 z-40">
-        <Navbar />
+      <div className="fixed top-0 left-0 lg:left-[236px] right-0 z-40">
+        {/* Mobile hamburger bar */}
+        <div className="flex items-center lg:hidden bg-[#0F5C5C] px-4 py-3 gap-3">
+          <button
+            onClick={() => setSidebarOpen((v) => !v)}
+            className="text-white text-xl w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/10 transition-all"
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
+          <span className="text-white font-bold text-[15px]  tracking-tight">Admin Panel</span>
+        </div>
+        {/* Original Navbar rendered only on lg+ */}
+        <div className="hidden lg:block">
+          <Navbar />
+        </div>
       </div>
 
       {/* ── Sidebar ── */}
-      <aside className="fixed top-0 left-0 bottom-0 w-[236px] bg-[#0F5C5C] flex flex-col z-50 shadow-xl shadow-[#0F5C5C]/20">
+      <aside
+        className={`fixed top-0 left-0 bottom-0 w-[236px] bg-[#0F5C5C] flex flex-col z-50 shadow-xl shadow-[#0F5C5C]/20
+          transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0`}
+      >
+        {/* Mobile close button inside sidebar */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-2 lg:hidden">
+          <span className="text-white font-bold text-sm tracking-widest uppercase opacity-60">Menu</span>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="text-white/60 hover:text-white text-lg w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10"
+          >
+            ✕
+          </button>
+        </div>
+
         <nav className="flex-1 py-4 px-2 mt-2">
-          <p className="px-3 mb-2 text-[10.5px] uppercase tracking-widest text-white/40 font-semibold">Menu</p>
+          <p className="hidden lg:block px-3 mb-2 text-[10.5px] uppercase tracking-widest text-white/40 font-semibold">Menu</p>
           {navItems.map((item) => (
             <button
               key={item.key}
@@ -421,51 +467,56 @@ export default function AdminDashboard() {
       </aside>
 
       {/* ── Main ── */}
-      <main className="ml-[236px] flex-1 p-9 min-h-screen pt-[80px]">
+      {/* On mobile: no left margin (sidebar is overlay). On lg+: ml-[236px] */}
+      <main className="w-full lg:ml-[236px] flex-1 p-4 sm:p-6 lg:p-9 min-h-screen pt-[56px] lg:pt-[80px]">
 
         {/* ── Overview ── */}
         {activePage === 'overview' && (
           <div>
-            <div className="mb-7">
-              <p className="text-[#0F5C5C] text-[11px] font-bold tracking-widest uppercase mb-1">Admin Panel</p>
-              <h2 className="text-[26px] font-bold text-[#0F5C5C] tracking-tight">Welcome back 👋</h2>
+            <div className="mb-6 sm:mb-7">
+              <p className="text-[#0F5C5C] text-[11px] font-bold tracking-widest mt-2 uppercase mb-1">Admin Panel</p>
+              <h2 className="text-[22px] sm:text-[26px] font-bold text-[#0F5C5C] tracking-tight">Welcome back 👋</h2>
               <p className="text-[13px] text-gray-400 mt-1">Here's a snapshot of your hospital network.</p>
             </div>
-            <div className="grid grid-cols-3 gap-4 mb-7">
+            {/* Stat cards: 1 col on xs, 2 on sm, 3 on md+ */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-7">
               <StatCard icon="🏥" value={hospitals.length} label="Total Hospitals" accent="teal" />
               <StatCard icon="👨‍⚕️" value={doctors.length} label="Total Doctors" accent="green" />
               <StatCard icon="🔗" value={assignedCount} label="Assigned Doctors" accent="amber" />
             </div>
             <div className="bg-white border border-[#e6f4f4] rounded-2xl overflow-hidden shadow-sm">
-              <div className="px-5 py-4 border-b border-[#e6f4f4] flex items-center justify-between">
+              <div className="px-4 sm:px-5 py-4 border-b border-[#e6f4f4] flex items-center justify-between">
                 <h3 className="text-sm font-bold text-[#0F5C5C] uppercase tracking-wide">Recent Hospitals</h3>
                 <button onClick={() => setActivePage('hospitals')} className="text-xs text-[#0F5C5C] font-semibold hover:underline">View All →</button>
               </div>
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-[#f4fafa]">
-                    {['Name', 'City', 'Phone', 'Added'].map((h) => (
-                      <th key={h} className="px-5 py-2.5 text-left text-[11px] uppercase tracking-wider text-[#0F5C5C]/50 font-bold border-b border-[#e6f4f4]">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr><td colSpan={4} className="text-center py-12 text-gray-400 text-sm">Loading...</td></tr>
-                  ) : hospitals.length === 0 ? (
-                    <EmptyState icon="🏥" text="No hospitals added yet." />
-                  ) : (
-                    hospitals.slice(0, 5).map((h) => (
-                      <tr key={h.id} className="hover:bg-[#f4fafa] transition-colors">
-                        <td className="px-5 py-3.5 text-[13.5px] font-semibold text-[#0F5C5C] border-b border-[#e6f4f4]">{h.name}</td>
-                        <td className="px-5 py-3.5 text-[13.5px] text-gray-500 border-b border-[#e6f4f4]">{h.city || '—'}</td>
-                        <td className="px-5 py-3.5 text-[13.5px] text-gray-500 border-b border-[#e6f4f4]">{h.phone || '—'}</td>
-                        <td className="px-5 py-3.5 text-[12px] text-gray-400 border-b border-[#e6f4f4]">{new Date(h.created_at).toLocaleDateString('en-IN')}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+              {/* Scrollable table on small screens */}
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[480px]">
+                  <thead>
+                    <tr className="bg-[#f4fafa]">
+                      {['Name', 'City', 'Phone', 'Added'].map((h) => (
+                        <th key={h} className="px-4 sm:px-5 py-2.5 text-left text-[11px] uppercase tracking-wider text-[#0F5C5C]/50 font-bold border-b border-[#e6f4f4]">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr><td colSpan={4} className="text-center py-12 text-gray-400 text-sm">Loading...</td></tr>
+                    ) : hospitals.length === 0 ? (
+                      <EmptyState icon="🏥" text="No hospitals added yet." />
+                    ) : (
+                      hospitals.slice(0, 5).map((h) => (
+                        <tr key={h.id} className="hover:bg-[#f4fafa] transition-colors">
+                          <td className="px-4 sm:px-5 py-3.5 text-[13.5px] font-semibold text-[#0F5C5C] border-b border-[#e6f4f4]">{h.name}</td>
+                          <td className="px-4 sm:px-5 py-3.5 text-[13.5px] text-gray-500 border-b border-[#e6f4f4]">{h.city || '—'}</td>
+                          <td className="px-4 sm:px-5 py-3.5 text-[13.5px] text-gray-500 border-b border-[#e6f4f4]">{h.phone || '—'}</td>
+                          <td className="px-4 sm:px-5 py-3.5 text-[12px] text-gray-400 border-b border-[#e6f4f4]">{new Date(h.created_at).toLocaleDateString('en-IN')}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
@@ -484,76 +535,139 @@ export default function AdminDashboard() {
         {/* ── Doctors ── */}
         {activePage === 'doctors' && (
           <div>
-            <div className="flex items-start justify-between mb-7">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 sm:mb-7">
               <div>
-                <p className="text-[#0F5C5C] text-[11px] font-bold tracking-widest uppercase mb-1">Manage</p>
-                <h2 className="text-[26px] font-bold text-[#0F5C5C] tracking-tight">Doctors</h2>
+                <p className="text-[#0F5C5C] text-[11px] font-bold mt-2 tracking-widest uppercase mb-1">Manage</p>
+                <h2 className="text-[22px] sm:text-[26px] font-bold text-[#0F5C5C] tracking-tight">Doctors</h2>
                 <p className="text-[13px] text-gray-400 mt-1">Manage doctors and their hospital assignments.</p>
               </div>
               <button
                 onClick={() => setDoctorModal(true)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0F5C5C] hover:bg-[#177a7a] text-white text-[13.5px] font-semibold shadow-lg shadow-[#0F5C5C]/20 transition-all"
+                className="self-start sm:self-auto flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0F5C5C] hover:bg-[#177a7a] text-white text-[13.5px] font-semibold shadow-lg shadow-[#0F5C5C]/20 transition-all whitespace-nowrap"
               >
                 + Add Doctor
               </button>
             </div>
 
-            <div className="bg-white border border-[#e6f4f4] rounded-2xl overflow-hidden shadow-sm">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-[#f4fafa]">
-                    {['Name', 'Specialization', 'Hospital', 'Phone', 'Email', 'Actions'].map((h) => (
-                      <th key={h} className="px-5 py-2.5 text-left text-[11px] uppercase tracking-wider text-[#0F5C5C]/50 font-bold border-b border-[#e6f4f4]">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr><td colSpan={6} className="text-center py-12 text-gray-400 text-sm">Loading...</td></tr>
-                  ) : doctors.length === 0 ? (
-                    <EmptyState icon="👨‍⚕️" text="No doctors yet. Add one to get started." />
-                  ) : (
-                    doctors.map((d) => (
-                      <tr key={d.id} className="hover:bg-[#f4fafa] transition-colors">
-                        <td className="px-5 py-3.5 text-[13.5px] font-semibold text-[#0F5C5C] border-b border-[#e6f4f4]">
-                          <div className="flex items-center gap-2.5">
-                            {d.image && (
-                              <img src={d.image} alt="" className="w-8 h-8 rounded-full object-cover border border-[#e6f4f4]"
-                                onError={(e) => { e.target.style.display = 'none'; }} />
-                            )}
-                            {d.name}
-                          </div>
-                        </td>
-                        <td className="px-5 py-3.5 border-b border-[#e6f4f4]">
+            {/* Desktop table */}
+            <div className="hidden md:block bg-white border border-[#e6f4f4] rounded-2xl overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[700px]">
+                  <thead>
+                    <tr className="bg-[#f4fafa]">
+                      {['Name', 'Specialization', 'Hospital', 'Phone', 'Email', 'Actions'].map((h) => (
+                        <th key={h} className="px-5 py-2.5 text-left text-[11px] uppercase tracking-wider text-[#0F5C5C]/50 font-bold border-b border-[#e6f4f4]">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr><td colSpan={6} className="text-center py-12 text-gray-400 text-sm">Loading...</td></tr>
+                    ) : doctors.length === 0 ? (
+                      <EmptyState icon="👨‍⚕️" text="No doctors yet. Add one to get started." />
+                    ) : (
+                      doctors.map((d) => (
+                        <tr key={d.id} className="hover:bg-[#f4fafa] transition-colors">
+                          <td className="px-5 py-3.5 text-[13.5px] font-semibold text-[#0F5C5C] border-b border-[#e6f4f4]">
+                            <div className="flex items-center gap-2.5">
+                              {d.image && (
+                                <img src={d.image} alt="" className="w-8 h-8 rounded-full object-cover border border-[#e6f4f4]"
+                                  onError={(e) => { e.target.style.display = 'none'; }} />
+                              )}
+                              {d.name}
+                            </div>
+                          </td>
+                          <td className="px-5 py-3.5 border-b border-[#e6f4f4]">
+                            {d.specialization ? <Badge color="teal">{d.specialization}</Badge> : <Badge color="gray">General</Badge>}
+                          </td>
+                          <td className="px-5 py-3.5 border-b border-[#e6f4f4]">
+                            {d.hospital_name ? <Badge color="green">{d.hospital_name}</Badge> : <span className="text-[13px] text-gray-400">Unassigned</span>}
+                          </td>
+                          <td className="px-5 py-3.5 text-[13.5px] text-gray-500 border-b border-[#e6f4f4]">{d.phone || '—'}</td>
+                          <td className="px-5 py-3.5 text-[12.5px] text-gray-400 border-b border-[#e6f4f4]">{d.email || '—'}</td>
+                          <td className="px-5 py-3.5 border-b border-[#e6f4f4]">
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                onClick={() => setEditingDoctor(d)}
+                                className="text-[12px] text-[#0F5C5C]/70 border border-[#0F5C5C]/20 hover:border-[#0F5C5C]/50 hover:bg-[#e6f4f4] hover:text-[#0F5C5C] px-3 py-1.5 rounded-lg transition-all font-semibold"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => deleteDoctor(d.id)}
+                                className="text-[12px] text-red-400 border border-red-200 hover:border-red-400 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-all"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Mobile card list */}
+            <div className="md:hidden space-y-3">
+              {loading ? (
+                <div className="text-center py-15 text-gray-400 text-sm bg-white rounded-2xl border border-[#e6f4f4]">Loading...</div>
+              ) : doctors.length === 0 ? (
+                <div className="py-12 text-center bg-white rounded-2xl border border-[#e6f4f4]">
+                  <div className="text-3xl opacity-30 mb-2">👨‍⚕️</div>
+                  <p className="text-[13.5px] text-gray-400">No doctors yet. Add one to get started.</p>
+                </div>
+              ) : (
+                doctors.map((d) => (
+                  <div key={d.id} className="bg-white border border-[#e6f4f4] rounded-2xl p-4 shadow-sm">
+                    <div className="flex items-center gap-3 mb-3">
+                      {d.image && (
+                        <img src={d.image} alt="" className="w-10 h-10 rounded-full object-cover border border-[#e6f4f4] shrink-0"
+                          onError={(e) => { e.target.style.display = 'none'; }} />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[14px] font-semibold text-[#0F5C5C] truncate">{d.name}</p>
+                        <div className="mt-1">
                           {d.specialization ? <Badge color="teal">{d.specialization}</Badge> : <Badge color="gray">General</Badge>}
-                        </td>
-                        <td className="px-5 py-3.5 border-b border-[#e6f4f4]">
-                          {d.hospital_name ? <Badge color="green">{d.hospital_name}</Badge> : <span className="text-[13px] text-gray-400">Unassigned</span>}
-                        </td>
-                        <td className="px-5 py-3.5 text-[13.5px] text-gray-500 border-b border-[#e6f4f4]">{d.phone || '—'}</td>
-                        <td className="px-5 py-3.5 text-[12.5px] text-gray-400 border-b border-[#e6f4f4]">{d.email || '—'}</td>
-                        <td className="px-5 py-3.5 border-b border-[#e6f4f4]">
-                          <div className="flex items-center gap-1.5">
-                            {/* ── Edit Doctor button ── */}
-                            <button
-                              onClick={() => setEditingDoctor(d)}
-                              className="text-[12px] text-[#0F5C5C]/70 border border-[#0F5C5C]/20 hover:border-[#0F5C5C]/50 hover:bg-[#e6f4f4] hover:text-[#0F5C5C] px-3 py-1.5 rounded-lg transition-all font-semibold"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => deleteDoctor(d.id)}
-                              className="text-[12px] text-red-400 border border-red-200 hover:border-red-400 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-all"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-1.5 text-[12.5px] mb-3">
+                      <div className="flex items-center gap-2 text-gray-500">
+                        <span className="text-[#0F5C5C]/40 w-4">🏥</span>
+                        {d.hospital_name ? <Badge color="green">{d.hospital_name}</Badge> : <span className="text-gray-400">Unassigned</span>}
+                      </div>
+                      {d.phone && (
+                        <div className="flex items-center gap-2 text-gray-500">
+                          <span className="text-[#0F5C5C]/40 w-4">📞</span>
+                          {d.phone}
+                        </div>
+                      )}
+                      {d.email && (
+                        <div className="flex items-center gap-2 text-gray-400">
+                          <span className="text-[#0F5C5C]/40 w-4">✉</span>
+                          <span className="truncate">{d.email}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2 pt-2 border-t border-[#e6f4f4]">
+                      <button
+                        onClick={() => setEditingDoctor(d)}
+                        className="flex-1 text-[12.5px] text-[#0F5C5C] border border-[#0F5C5C]/20 hover:bg-[#e6f4f4] px-3 py-2 rounded-lg transition-all font-semibold text-center"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteDoctor(d.id)}
+                        className="flex-1 text-[12.5px] text-red-400 border border-red-200 hover:bg-red-50 px-3 py-2 rounded-lg transition-all text-center"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
@@ -569,7 +683,7 @@ export default function AdminDashboard() {
           <MField label="Hospital Name *">
             <input className={inputCls} placeholder="e.g. Apollo Hospitals" value={hName} onChange={(e) => setHName(e.target.value)} />
           </MField>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <MField label="City">
               <input className={inputCls} placeholder="Moradabad" value={hCity} onChange={(e) => setHCity(e.target.value)} />
             </MField>
@@ -580,7 +694,7 @@ export default function AdminDashboard() {
           <MField label="Address">
             <input className={inputCls} placeholder="123, Main Road..." value={hAddress} onChange={(e) => setHAddress(e.target.value)} />
           </MField>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <MField label="Phone">
               <input className={inputCls} placeholder="+91 98765 43210" value={hPhone} onChange={(e) => setHPhone(e.target.value)} />
             </MField>
@@ -618,7 +732,7 @@ export default function AdminDashboard() {
               ))}
             </select>
           </MField>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <MField label="Phone">
               <input className={inputCls} placeholder="+91 98765 43210" value={dPhone} onChange={(e) => setDPhone(e.target.value)} />
             </MField>

@@ -1,5 +1,6 @@
 "use client";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import { useState } from "react";
 
 const faqs = [
@@ -250,6 +251,7 @@ const FAQsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#f4fbfb]">
+      <Navbar/>
       {/* Hero */}
       <div className="bg-gradient-to-br from-[#0F5C5C] via-[#177a7a] to-[#1a9090] relative overflow-hidden">
         {/* decorative circles */}

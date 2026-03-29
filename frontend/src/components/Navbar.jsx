@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 // ─── Reverse geocode using free OpenStreetMap Nominatim API ───────────────────
 async function reverseGeocode(lat, lng) {
@@ -262,6 +263,8 @@ const Navbar = () => {
   const [city, setCity]               = useState(null);   // null = not set yet
   const [detecting, setDetecting]     = useState(false);
   const cityBtnRef                    = useRef(null);
+  const router = useRouter();
+const [searchQuery, setSearchQuery] = useState("");
 
   // ── On mount: check localStorage, then show popup if first visit ────────────
   useEffect(() => {
@@ -274,6 +277,15 @@ const Navbar = () => {
       return () => clearTimeout(t);
     }
   }, []);
+
+  const handleSearch = () => {
+  if (!searchQuery.trim()) return;
+  router.push(`/hospitals?search=${encodeURIComponent(searchQuery.trim())}`);
+};
+
+const handleKey = (e) => {
+  if (e.key === "Enter") handleSearch();
+};
 
   // ── Persist city to localStorage & dispatch event for other components ───────
   const applyCity = useCallback((c) => {
@@ -379,7 +391,54 @@ const Navbar = () => {
           </div>
 
           {/* NAV LINKS */}
-          <div className="hidden md:flex items-center gap-1 ml-auto">
+          {/* SEARCH BAR */}
+{/* SEARCH BAR */}
+<div className="hidden md:flex items-center bg-[#f4fafa] border border-[#e6f4f4] rounded-full px-3 h-[40px] w-[260px] ml-auto">
+
+  <svg
+    className="text-[#0F5C5C] mr-2"
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <circle cx="11" cy="11" r="8" />
+    <path d="m21 21-4.35-4.35" />
+  </svg>
+
+  <input
+    type="text"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    onKeyDown={handleKey}
+    placeholder="Search hospitals..."
+    className="flex-1 bg-transparent outline-none text-sm text-[#1a3333] placeholder-gray-400"
+  />
+
+  {/* Clear button */}
+  {searchQuery && (
+    <button
+      onClick={() => setSearchQuery("")}
+      className="text-gray-400 hover:text-gray-600 text-lg px-1"
+    >
+      ×
+    </button>
+  )}
+
+  {/* Search button */}
+  <button
+    onClick={handleSearch}
+    className="ml-2 bg-[#0F5C5C] hover:bg-[#177a7a] text-white text-xs px-4 py-1.5 rounded-full"
+  >
+    Search
+  </button>
+</div>
+
+{/* NAV LINKS */}
+<div className="hidden md:flex items-center gap-1">
             {["Blogs", "FAQs", "Contact"].map((label) => (
               <a key={label} href={`/${label.toLowerCase()}`}
                 className="relative px-[14px] py-2 text-sm font-medium text-[#2a5252] rounded-lg transition-all duration-200 hover:bg-[#e6f4f4] hover:text-[#0F5C5C] group">

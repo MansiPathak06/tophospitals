@@ -531,7 +531,7 @@ export default function HospitalsTab({ token, hospitals, loading, onRefresh, sho
   return (
     <div>
       {/* Header */}
-      <div className="flex items-start justify-between mb-7">
+      <div className="flex items-start mt-2 justify-between mb-7">
         <div>
           <h2 className="text-[26px] text-gray-800 font-semibold tracking-tight">Hospitals</h2>
           <p className="text-[13px] text-teal-600 mt-1">Manage all registered hospitals in the network.</p>

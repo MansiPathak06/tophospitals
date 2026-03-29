@@ -127,12 +127,12 @@ export default function BlogsTab({ token, showToast }) {
       </div>
 
       {/* ── Stats row ── */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-3 gap-3 mb-6">
         {[
           { label: 'Total Posts', value: blogs.length,                           color: 'text-teal-300'   },
           { label: 'Published',   value: blogs.filter(b => b.published).length,  color: 'text-emerald-400'},
           { label: 'Drafts',      value: blogs.filter(b => !b.published).length, color: 'text-amber-400'  },
-          { label: 'Featured',    value: blogs.filter(b => b.is_featured).length,color: 'text-cyan-400'   },
+          
         ].map(({ label, value, color }) => (
           <div key={label} className="bg-[#134545] border border-teal-500/[0.08] rounded-xl px-4 py-3">
             <p className={`text-2xl font-bold ${color}`}>{value}</p>
