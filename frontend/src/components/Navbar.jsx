@@ -67,6 +67,11 @@ const POPULAR_CITIES = [
   "Pune", "Ahmedabad", "Jaipur", "Lucknow", "Noida", "Gurgaon",
   "Agra", "Moradabad", "Kanpur", "Varanasi", "Surat", "Indore",
 ];
+const PhoneIcon = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.45 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56a16 16 0 0 0 5.55 5.55l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+  </svg>
+);
 
 // ─── Location Permission Popup ────────────────────────────────────────────────
 function LocationPopup({ onAllow, onDismiss }) {
@@ -451,8 +456,8 @@ const handleKey = (e) => {
           {/* CALL US */}
           <a href="tel:+911800000000"
             className="hidden md:flex items-center gap-2 px-[22px] h-[42px] bg-[#0F5C5C] text-white rounded-full text-[13.5px] font-semibold tracking-wide shadow-[0_4px_16px_rgba(15,92,92,0.28)] transition-all duration-200 hover:bg-[#177a7a] hover:shadow-[0_6px_22px_rgba(15,92,92,0.38)] hover:-translate-y-px active:translate-y-0 ml-2 flex-shrink-0">
-            <span className="w-2 h-2 rounded-full bg-[#2ec4a0] animate-pulse" />
-            Call Us
+            <PhoneIcon size={16} />
+            +91 98765 43210
           </a>
 
           {/* HAMBURGER */}
@@ -463,6 +468,7 @@ const handleKey = (e) => {
             <span className={`block w-6 h-0.5 bg-[#0F5C5C] rounded transition-all duration-300 origin-center ${menuOpen ? "-translate-y-[7px] -rotate-45" : ""}`} />
           </button>
         </div>
+        
 
         {/* ── MOBILE MENU ── */}
         {menuOpen && (
