@@ -86,7 +86,7 @@ export default function HospitalsPage() {
     <>
      
       <div className="min-h-screen bg-[#f4fafa]">
-        <div className="bg-white border-b-2 border-[#e6f4f4] px-6 py-10">
+        <div className="bg-white  border-b-2 border-[#e6f4f4] px-6 py-5">
           <div id="hospitals-top" className="max-w-[1280px] mx-auto flex items-end justify-between flex-wrap gap-4">
             <div>
               <p className="text-[#0F5C5C] text-[11px] font-bold tracking-widest uppercase mb-1.5">Discover</p>
