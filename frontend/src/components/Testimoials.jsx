@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -81,35 +81,60 @@ function Stars({ rating }) {
 
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState(defaultTestimonials);
-  const [active, setActive] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [apiError, setApiError] = useState("");
+  const [active, setActive]             = useState(0);
+  const [loading, setLoading]           = useState(true);
+  const [showModal, setShowModal]       = useState(false);
+  const [submitted, setSubmitted]       = useState(false);
+  const [submitting, setSubmitting]     = useState(false);
+  const [apiError, setApiError]         = useState("");
 
-  const [form, setForm] = useState({ name: "", location: "", hospital: "", rating: 0, review_text: "" });
+  const [form, setForm]           = useState({ name: "", location: "", hospital: "", rating: 0, review_text: "" });
   const [hoveredStar, setHoveredStar] = useState(0);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors]       = useState({});
+
+  const scrollRef    = useRef(null);
+  const intervalRef  = useRef(null);
 
   // ── Fetch reviews from backend ──
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/reviews`);
+        const res  = await fetch(`${API_BASE}/api/reviews`);
         const json = await res.json();
         if (json.success && json.data.length > 0) {
           setTestimonials([...defaultTestimonials, ...json.data]);
         }
       } catch (err) {
         console.warn("Could not fetch reviews:", err.message);
-        // Falls back to defaultTestimonials silently
       } finally {
         setLoading(false);
       }
     };
     fetchReviews();
   }, []);
+
+  // ── Auto-scroll on mobile ──
+  useEffect(() => {
+    const startAutoScroll = () => {
+      intervalRef.current = setInterval(() => {
+        const isMobile = window.innerWidth < 768;
+        if (!isMobile) return;
+
+        setActive((prev) => {
+          const next = (prev + 1) % testimonials.length;
+          const scroll = scrollRef.current;
+          if (scroll) {
+            const card = scroll.children[next];
+            card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+          }
+          return next;
+        });
+      }, 3000);
+    };
+
+    startAutoScroll();
+    return () => clearInterval(intervalRef.current);
+  }, [testimonials.length]);
 
   const validate = () => {
     const e = {};
@@ -149,9 +174,8 @@ export default function Testimonials() {
         return;
       }
 
-      // Append new review live
       setTestimonials((prev) => [...prev, json.data]);
-      setActive(testimonials.length); // highlight new card
+      setActive(testimonials.length);
       setSubmitted(true);
 
       setTimeout(() => {
@@ -190,6 +214,7 @@ export default function Testimonials() {
           position: relative;
           overflow: hidden;
           flex: 0 0 280px;
+          scroll-snap-align: start;
         }
         .testi-card.active {
           background: #0F5C5C;
@@ -207,8 +232,11 @@ export default function Testimonials() {
           gap: 20px;
           overflow-x: auto;
           padding-bottom: 8px;
+          padding-top: 8px; 
           scrollbar-width: thin;
           scrollbar-color: #d1fae5 transparent;
+          scroll-snap-type: x mandatory;
+          -webkit-overflow-scrolling: touch;
         }
         .testi-scroll::-webkit-scrollbar { height: 4px; }
         .testi-scroll::-webkit-scrollbar-thumb { background: #d1fae5; border-radius: 4px; }
@@ -271,7 +299,15 @@ export default function Testimonials() {
         }
         .err-text { color: #ef4444; font-size: 11px; margin-top: 4px; }
         .loc-icon { display: flex; align-items: center; gap: 3px; }
-        @media (max-width: 580px) { .modal-box { padding: 28px 20px; } }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+          .testi-card { flex: 0 0 85vw; }
+        }
+        @media (max-width: 580px) {
+          .modal-box { padding: 28px 20px; }
+          .name-loc-grid { grid-template-columns: 1fr !important; }
+        }
       `}</style>
 
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -300,13 +336,17 @@ export default function Testimonials() {
             Loading reviews…
           </div>
         ) : (
-          <div className="testi-scroll" style={{ marginBottom: 32 }}>
+          <div className="testi-scroll" ref={scrollRef} style={{ marginBottom: 32 }}>
             {testimonials.map((t, i) => {
               const isActive = active === i;
               const initials = getInitials(t.name);
-              const color = t.avatarBg || getAvatarColor(t.name);
+              const color    = t.avatarBg || getAvatarColor(t.name);
               return (
-                <div key={t.id} className={`testi-card${isActive ? " active" : ""}`} onClick={() => setActive(i)}>
+                <div
+                  key={t.id}
+                  className={`testi-card${isActive ? " active" : ""}`}
+                  onClick={() => setActive(i)}
+                >
                   {!t.isDefault && <span className="new-badge">New ✨</span>}
                   <div style={{ position: "absolute", top: 14, right: 18, fontSize: 60, lineHeight: 1, color: isActive ? "rgba(255,255,255,0.1)" : "rgba(15,92,92,0.06)", fontFamily: "Georgia,serif", pointerEvents: "none" }}>"</div>
 
@@ -376,7 +416,7 @@ export default function Testimonials() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {/* Name + Location */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div className="name-loc-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }}>
                     <div>
                       <label style={{ fontSize: 12, fontWeight: 600, color: "#2a5252", display: "block", marginBottom: 6 }}>Your Name *</label>
                       <input className={`form-input${errors.name ? " err" : ""}`} placeholder="e.g. Priya Sharma" value={form.name}
