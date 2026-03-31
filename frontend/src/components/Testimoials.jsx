@@ -88,6 +88,7 @@ export default function Testimonials() {
   const [submitting, setSubmitting]     = useState(false);
   const [apiError, setApiError]         = useState("");
 
+  // ── hospital is now required (no longer optional) ──
   const [form, setForm]           = useState({ name: "", location: "", hospital: "", rating: 0, review_text: "" });
   const [hoveredStar, setHoveredStar] = useState(0);
   const [errors, setErrors]       = useState({});
@@ -140,6 +141,8 @@ export default function Testimonials() {
     const e = {};
     if (!form.name.trim()) e.name = "Name is required";
     if (!form.location.trim()) e.location = "Location is required";
+    // ── hospital is now required ──
+    if (!form.hospital.trim()) e.hospital = "Hospital name is required";
     if (!form.review_text.trim() || form.review_text.trim().length < 20)
       e.review_text = "Please write at least 20 characters";
     if (form.rating === 0) e.rating = "Please select a rating";
@@ -160,7 +163,7 @@ export default function Testimonials() {
         body: JSON.stringify({
           name: form.name.trim(),
           location: form.location.trim(),
-          hospital: form.hospital.trim() || null,
+          hospital: form.hospital.trim(),   // always sent (required)
           rating: form.rating,
           review_text: form.review_text.trim(),
         }),
@@ -431,13 +434,18 @@ export default function Testimonials() {
                     </div>
                   </div>
 
-                  {/* Hospital */}
+                  {/* Hospital — now required */}
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 600, color: "#2a5252", display: "block", marginBottom: 6 }}>
-                      Hospital Name <span style={{ color: "#9ca3af", fontWeight: 400 }}>(optional)</span>
+                      Hospital Name *
                     </label>
-                    <input className="form-input" placeholder="e.g. Apollo Hospital" value={form.hospital}
-                      onChange={(e) => setForm({ ...form, hospital: e.target.value })} />
+                    <input
+                      className={`form-input${errors.hospital ? " err" : ""}`}
+                      placeholder="e.g. Apollo Hospital"
+                      value={form.hospital}
+                      onChange={(e) => { setForm({ ...form, hospital: e.target.value }); setErrors({ ...errors, hospital: "" }); }}
+                    />
+                    {errors.hospital && <p className="err-text">{errors.hospital}</p>}
                   </div>
 
                   {/* Stars */}
