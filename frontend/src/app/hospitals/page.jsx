@@ -3,9 +3,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCity } from "@/hooks/useCity";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-
 
 const API = "http://localhost:5000/api";
 
@@ -27,6 +24,7 @@ const GridIcon = () => (
     <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
   </svg>
 );
+
 const ListIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="10" width="18" height="5" rx="1"/>
@@ -34,24 +32,45 @@ const ListIcon = () => (
   </svg>
 );
 
+const LocationIcon = ({ size = 13 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+    <circle cx="12" cy="9" r="2.5"/>
+  </svg>
+);
+
+function getDirectionUrl(hospital) {
+  const embed = hospital.map_embed || "";
+  const match = embed.match(/!2d(-?[\d.]+)!3d(-?[\d.]+)/);
+  if (match) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${match[2]},${match[1]}`;
+  }
+  const query = [hospital.address, hospital.city, hospital.state].filter(Boolean).join(", ");
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
+}
 const HospitalCard = ({ hospital, isGrid }) => (
-  <div className={`group bg-white rounded-xl border border-[#e6f4f4] shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${isGrid ? "flex flex-col" : "flex flex-row"}`}>
-    
+  <div className={`group bg-white rounded-xl border border-[#e6f4f4] shadow-sm  transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${isGrid ? "flex flex-col" : "flex flex-row"}`}>
+
+    {/* Image */}
     <div className={`relative bg-[#e6f4f4] flex-shrink-0 overflow-hidden ${isGrid ? "w-full h-36" : "w-44 h-auto min-h-full"}`}>
-      <img src={hospital.image} alt={hospital.name}
+      <img
+        src={hospital.image}
+        alt={hospital.name}
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        onError={(e) => { e.target.style.display = "none"; }} />
+        onError={(e) => { e.target.style.display = "none"; }}
+      />
       {hospital.verified && (
-        <span className="absolute top-2 left-2 bg-[#0F5C5C] text-white text-[9px] font-bold px-2 py-0.5 rounded-full">✓ Verified</span>
+        <span className="absolute top-2 left-2 bg-[#0F5C5C] text-white text-[9px] font-bold px-2 py-0.5 rounded-full z-10">✓ Verified</span>
       )}
       {hospital.tag && (
-        <span className="absolute top-2 right-2 bg-amber-400 text-amber-900 text-[9px] font-bold px-2 py-0.5 rounded-full">★ {hospital.tag}</span>
+        <span className="absolute top-2 right-2 bg-amber-400 text-amber-900 text-[9px] font-bold px-2 py-0.5 rounded-full z-10">★ {hospital.tag}</span>
       )}
       {hospital.emergency && (
-        <span className="absolute bottom-2 right-2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">24/7 ER</span>
+        <span className="absolute bottom-2 right-2 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full z-10">24/7 ER</span>
       )}
     </div>
 
+    {/* Content */}
     <div className="p-3.5 flex flex-col flex-1">
       <div className="flex justify-between items-start gap-1 mb-0.5">
         <h3 className="text-[#0F5C5C] font-bold text-[13px] leading-tight line-clamp-1 m-0">{hospital.name}</h3>
@@ -82,15 +101,39 @@ const HospitalCard = ({ hospital, isGrid }) => (
         )}
       </div>
 
+      {/* Buttons */}
       <div className="mt-auto pt-2.5 border-t border-gray-100 flex gap-2">
-        <a href={`tel:${hospital.phone}`}
+        <a
+          href={`tel:${hospital.phone}`}
           className="flex-1 flex items-center justify-center gap-1 border-[1.5px] border-[#0F5C5C] text-[#0F5C5C] text-[11px] font-semibold rounded-lg py-2 no-underline bg-transparent transition-colors hover:bg-[#0F5C5C] hover:text-white duration-200">
           📞 Call
         </a>
-        <Link href={`/hospitals/${hospital.id}`}
+
+        <Link
+          href={`/hospitals/${hospital.id}`}
           className="flex-1 flex items-center justify-center gap-1 bg-[#0F5C5C] text-white text-[11px] font-semibold rounded-lg py-2 no-underline transition-colors hover:bg-[#177a7a] duration-200">
           Details →
         </Link>
+
+        {/* List view: full "Get Direction" button | Grid view: icon only */}
+        {!isGrid ? (
+          <a
+            href={getDirectionUrl(hospital)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-1 border-[1.5px] border-[#2ec4a0] text-[#0F5C5C] text-[11px] font-semibold rounded-lg py-2 no-underline bg-transparent transition-colors hover:bg-[#e6f4f4] duration-200">
+            <LocationIcon size={11} />
+            Get Direction
+          </a>
+        ) : (
+          <a
+            href={getDirectionUrl(hospital)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center w-8 flex-shrink-0 border-[1.5px] border-[#2ec4a0] text-[#0F5C5C] rounded-lg py-2 no-underline bg-transparent transition-colors hover:bg-[#e6f4f4] duration-200">
+            <LocationIcon size={13} />
+          </a>
+        )}
       </div>
     </div>
   </div>
@@ -141,8 +184,7 @@ export default function HospitalsPage() {
   const clearSearch = () => handleSearchChange("");
 
   return (
-    <div className=" bg-[#f4fafa]">
-   
+    <div className="bg-[#f4fafa]">
 
       {/* Header */}
       <div className="px-6 py-2 border-[#e6f4f4]">
@@ -157,11 +199,13 @@ export default function HospitalsPage() {
               {loading ? "Loading..." : `${displayed.length} hospital${displayed.length !== 1 ? "s" : ""} found`}
             </p>
             <div className="flex items-center gap-1 border-[1.5px] border-[#0F5C5C] rounded-full p-1">
-              <button onClick={() => setIsGrid(true)}
+              <button
+                onClick={() => setIsGrid(true)}
                 className={`p-2 rounded-full transition-all duration-200 ${isGrid ? "bg-[#0F5C5C] text-white" : "text-[#0F5C5C]"}`}>
                 <GridIcon />
               </button>
-              <button onClick={() => setIsGrid(false)}
+              <button
+                onClick={() => setIsGrid(false)}
                 className={`p-2 rounded-full transition-all duration-200 ${!isGrid ? "bg-[#0F5C5C] text-white" : "text-[#0F5C5C]"}`}>
                 <ListIcon />
               </button>
@@ -235,16 +279,15 @@ export default function HospitalsPage() {
             </div>
           </div>
         ) : (
-        <div className={isGrid
-  ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-  : "flex flex-col gap-3"}>
+          <div className={isGrid
+            ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+            : "flex flex-col gap-3"}>
             {displayed.map((h) => (
               <HospitalCard key={h.id} hospital={h} isGrid={isGrid} />
             ))}
           </div>
         )}
       </div>
-  
     </div>
   );
 }

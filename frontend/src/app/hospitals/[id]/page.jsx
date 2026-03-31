@@ -4,6 +4,16 @@ import Link from "next/link";
 
 const API = "http://localhost:5000/api";
 
+function getDirectionUrl(hospital) {
+  const embed = hospital.map_embed || "";
+  const match = embed.match(/!2d(-?[\d.]+)!3d(-?[\d.]+)/);
+  if (match) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${match[2]},${match[1]}`;
+  }
+  const query = [hospital.address, hospital.city, hospital.state].filter(Boolean).join(", ");
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
+}
+
 const Stars = ({ rating }) => (
   <div className="flex gap-0.5">
     {[1, 2, 3, 4, 5].map((s) => (
@@ -374,7 +384,7 @@ export default function HospitalDetailPage({ params }) {
             <p className="text-white font-bold text-[15px] mb-1">Need Directions?</p>
             <p className="text-white/60 text-xs mb-4">Open in Google Maps</p>
             <a
-              href={`https://maps.google.com/?q=${encodeURIComponent(hospital.address || "")}`}
+              href={getDirectionUrl(hospital)}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 bg-white text-[#0F5C5C] rounded-xl px-5 py-2.5 text-[13px] font-bold no-underline"
